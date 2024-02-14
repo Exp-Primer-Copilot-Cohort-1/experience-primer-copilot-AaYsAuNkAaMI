@@ -1,10 +1,10 @@
 {
   //Name this configuration
 "name":"Codespace for Skills!",
-  "customizaiton":{
+  "customizaitons":{
     "vscode":{
       "extensions":[
-        "GitHb.copilot"
+        "GitHub.copilot"
       ]
     }
   }
