@@ -1,45 +1,49 @@
-//create web server
-var http = require('http');
-var fs = require('fs');
-var path = require('path');
-var url = require('url');
+//Create web server 
+// 1. require http module
+// 2. create server using http.createServer() method
+// 3. listen to server on port 3000
 
-http.createServer(function(req, res) {
-    var pathname = url.parse(req.url).pathname;
-    var ext = path.extname(pathname);
-    var type = '';
-    var data = '';
-    switch (ext) {
-        case '.html':
-            type = 'text/html';
-            data = fs.readFileSync(__dirname + pathname, 'utf-8');
-            break;
-        case '.js':
-            type = 'text/javascript';
-            data = fs.readFileSync(__dirname + pathname, 'utf-8');
-            break;
-        case '.css':
-            type = 'text/css';
-            data = fs.readFileSync(__dirname + pathname, 'utf-8');
-            break;
-        case '.jpg':
-            type = 'image/jpeg';
-            data = fs.readFileSync(__dirname + pathname);
-            break;
-        case '.png':
-            type = 'image/png';
-            data = fs.readFileSync(__dirname + pathname);
-            break;
-        case '.gif':
-            type = 'image/gif';
-            data = fs.readFileSync(__dirname + pathname);
-            break;
-        default:
-            type = 'text/html';
-            data = fs.readFileSync(__dirname + '/index.html', 'utf-8');
-            break;
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+const port = 3000;
+
+const server = http.createServer((req, res) => {
+    const path = url.parse(req.url, true).pathname;
+    if (path === '/') {
+        fs.readFile('./index.html', (err, data) => {
+            if (err) {
+                res.writeHead(404, {
+                    'Content-Type': 'text/html'
+                });
+                res.write('404: File Not Found');
+                return res.end();
+            }
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
+            res.write(data);
+            return res.end();
+        });
     }
-    res.writeHead(200, {'Content-Type': type});
-    res.write(data);
-    res.end();
-}).listen(3000);
+    if (path === '/comments') {
+        fs.readFile('./comments.json', (err, data) => {
+            if (err) {
+                res.writeHead(404, {
+                    'Content-Type': 'application/json'
+                });
+                res.write('404: File Not Found');
+                return res.end();
+            }
+            res.writeHead(200, {
+                'Content-Type': 'application/json'
+            });
+            res.write(data);
+            return res.end();
+        });
+    }
+});
+
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
